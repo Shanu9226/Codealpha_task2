@@ -1,0 +1,42 @@
+import yfinance as yf
+
+class Stock:
+    def __init__(self, symbol, quantity):
+        self.symbol = symbol
+        self.quantity = quantity
+        self.price = 0
+        self.value = 0
+        self.update_price()
+
+    def update_price(self):
+        stock = yf.Ticker(self.symbol)
+        self.price = stock.history(period="1d")["Close"][0]
+        self.value = self.price * self.quantity
+
+class Portfolio:
+    def __init__(self):
+        self.stocks = []
+
+    def add_stock(self, symbol, quantity):
+        stock = Stock(symbol, quantity)
+        self.stocks.append(stock)
+
+    def update_all_prices(self):
+        for stock in self.stocks:
+            stock.update_price()
+
+    def total_value(self):
+        return sum(stock.value for stock in self.stocks)
+
+    def display(self):
+        for stock in self.stocks:
+            print(f"{stock.symbol}: {stock.quantity} shares at {stock.price:.2f} each, value: {stock.value:.2f}")
+        print(f"Total Portfolio Value: {self.total_value():.2f}")
+
+if __name__ == "__main__":
+    portfolio = Portfolio()
+    portfolio.add_stock("AAPL", 10)
+    portfolio.add_stock("TSLA", 5)
+    portfolio.add_stock("GOOG", 2)
+    portfolio.update_all_prices()
+    portfolio.display()
